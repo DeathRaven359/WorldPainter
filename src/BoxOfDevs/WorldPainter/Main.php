@@ -14,24 +14,48 @@ class Main extends PluginBase{
     
     
 public function onEnable(){
+    $this->mode = [];
 // $this->getServer()->getPluginManager()->registerEvents($this, $this);
  }
  
  
- const Prefix = C::YELLOW . "[" . C::GOLD . "WorldPainter" . C::YELLOW . "] ";
- 
+ define("Prefix", C::YELLOW . "[" . C::GOLD . "WorldPainter" . C::YELLOW . "] ", true);
+ define("M_PLACE", "PlayerModePlace");
+ define("M_REPLACE", "PlayerModeReplace");
+ define("CG", C::GREEN); // Green color shortcut
+ define("CR", C::RED); // Red color shortcut
+ define("CY", C::YELLOW); // Yellow color shortcut
+ define("CO", C::GOLD); // Orange color shortcut
  
  
  public function onCommand(CommandSender $sender, Command $cmd, $label, array $args){
      switch($cmd->getName()){
          
          
-         case "/wpwand":
+         
+         case "/wpwand": // This will be used to detect when does the player wants to use the wand
          if($sender instanceof Player) {
              $sender->getInventory()->addItem(\pocketmine\Item::get($this->getConfig()->get("WandId")));
-             $sender->sendMessage(self::Prefix . C::GREEN . "You got now the WorldPainter wand.");
+             $sender->sendMessage(Prefix . CG . "You got now the WorldPainter wand.");
          }
          break;
+         
+         
+         
+         case "/mode": // To change between replacing and placing
+         if($sender instanceof Player and isset($args[0])) {
+             switch(strtolower($args[0])) {
+                 case "place": // Entering in place mode
+                 $this->modes[$sender->getName()] = M_PLACE;
+                 $sender->sendMessage(PREFIX . CG . "You have succefully entered in Place mode")
+                 break;
+                 case "place": // Entering in replace mode
+                 $this->modes[$sender->getName()] = M_REPLACE;
+                 break;
+             }
+         }
+         break;
+         
          
          
          
