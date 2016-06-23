@@ -3,24 +3,15 @@ namespace BoxOfDevs\WorldPainter ;
 use pocketmine\command\CommandSender;
 use pocketmine\command\Command;
 use pocketmine\event\Listener;
-use poxketmine\utils\TextFormat as C;
+use pocketmine\item\Item;
+use pocketmine\utils\TextFormat as C;
 use pocketmine\plugin\PluginBase;
+use pocketmine\plugin\Plugin;
 use pocketmine\Server;
- use pocketmine\Player;
+use pocketmine\scheduler\PluginTask; 
+use pocketmine\Player;
 
 
-class Main extends PluginBase{
-    
-    
-    
-public function onEnable(){
-    $this->mode = [];
-    $this->raidus = [];
-    $this->block = [];
-// $this->getServer()->getPluginManager()->registerEvents($this, $this);
- }
- 
- 
  define("Prefix", C::YELLOW . "[" . C::GOLD . "WorldPainter" . C::YELLOW . "] ", true);
  define("M_PLACE", "PlayerModePlace");
  define("M_REPLACE", "PlayerModeReplace");
@@ -28,6 +19,52 @@ public function onEnable(){
  define("CR", C::RED); // Red color shortcut
  define("CY", C::YELLOW); // Yellow color shortcut
  define("CO", C::GOLD); // Orange color shortcut
+ 
+ 
+ 
+class Main extends PluginBase{
+    
+    
+    
+public function onEnable(){
+    $this->mode = [];
+    $this->radius = [];
+    $this->block = [];
+    $this->getServer()->getScheduler()->scheduleRepeatingTask(new PaintTask($this));
+// $this->getServer()->getPluginManager()->registerEvents($this, $this);
+ }
+ 
+ 
+ 
+ 
+ 
+ 
+ public function parseBlock(string $cblock) { // Format example: "1:0%90,6:0%10" 
+ 
+     if(strpos($cblock, ",")) { // If there is a proportion.
+         $cblocks = explode(",", $cblock);
+         $blocks = [];
+         foreach($cblocks as $cblock2) {
+             
+             if(strpos($cblock2, "%")) {
+                 $pblock = explode("%", $cblock2);
+                 array_push($blocks, Item::fromString($pblock[0])->getName() . " with " .  $pblock[1] . "percents");
+             } else {
+                 return false; // Isn't a valid format.
+             }
+             
+         }
+         return implode(", ", $blocks);
+         
+     } else { // If there is only one block
+         return Item::fromString($cblock);
+     }
+ }
+ 
+ 
+ 
+ 
+ 
  
  
  public function onCommand(CommandSender $sender, Command $cmd, $label, array $args){
@@ -96,7 +133,10 @@ public function onEnable(){
          case "/block":
          if($sender instanceof Player and isset($args[0])) {
              if($this->parseBlock($args[0]) !== false) {
-                 $sender->sendMessage(PREFIX  . "")
+                 $this->block[$sender->getName()] = $args[0];
+                 $sender->sendMessage(PREFIX  . CG . "You have succefully set your block to {$this->parseBlock($args[0])}")
+             } else {
+                 $sender->sendMessage(PREFIX . CR . "You haven't set a real block !");
              }
          } elseif(!$sender instanceof Player) {
              $sender->sendMessage(PREFIX . CR . "You can only use this command in game !");
@@ -113,4 +153,57 @@ public function onEnable(){
      }
      return false;
  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class PaintTask extends PluginTask {
+    
+    
+    public function __construct(Plugin $main) {
+        parent::__construct($main);
+        $this->m = $main;
+        $this->cfg = $main->getConfig();
+        $this->wandid = $main->getConfig()->get("WandId");
+    }
+    
+    
+    
+    public function place(Player $player) {
+        switch($this->m->mode[$player->getName()])
+        $player->getTargetBlock(20, $transparent);
+    }
+    
+    
+    
+    
+    public function onRun($tick) {
+        foreach($this->m->getServer()->getOnlinePlayers() as $player) {
+            if($player->getInventory()->getItemInHand()->getId() === $this->wandid and $player->hasPermission('wp.use')) {
+                $this->place($player);
+            }
+        }
+    }
+    
+    
+    
+    
+    
 }

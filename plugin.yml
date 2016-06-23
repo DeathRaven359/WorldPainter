@@ -42,6 +42,8 @@ permissions:
     default: op
   wp.radius:
     default: op
+  wp.block:
+    default: op
   wp.use:
     default: op
 ...
