@@ -33,14 +33,16 @@ public function onEnable(){
     $this->mode = [];
     $this->radius = [];
     $this->block = [];
-    $this->getServer()->getScheduler()->scheduleRepeatingTask(new PaintTask($this));
+    $this->getServer()->getScheduler()->scheduleRepeatingTask(new PaintTask($this), 5);
 // $this->getServer()->getPluginManager()->registerEvents($this, $this);
  }
  
  
  
  public function lastemptyblock(Player $player) {
-     // TO DO
+     $fillblock = $player->getTargetBlock(20);
+     $block = new \BoxOfDevs\WorldPainter\GetEmptyBlock($player, $fillblock);
+     return $block->block;
  }
  
  
@@ -192,7 +194,7 @@ public function onEnable(){
          if($sender instanceof Player and isset($args[0])) {
              if($this->parseBlock($args[0]) !== false) {
                  $this->block[$sender->getName()] = $args[0];
-                 $sender->sendMessage(PREFIX  . CG . "You have succefully set your block to {$this->parseBlock($args[0])}")
+                 $sender->sendMessage(PREFIX  . CG . "You have succefully set your block to {$this->parseBlock($args[0])}");
              } else {
                  $sender->sendMessage(PREFIX . CR . "You haven't set a real block !");
              }
@@ -248,9 +250,9 @@ class PaintTask extends PluginTask {
         switch($this->m->mode[$player->getName()]) {
             
             case M_PLACE:
-            $centerblock = $this->m->lastemptyblock($player); // TO DO
+            $centerblock = $this->m->lastemptyblock($player);
             if(!isset($this->m->radius[$player->getName()])) {
-                $this->m->radius->[$player->getName()] = 1;
+                $this->m->radius[$player->getName()] = 1;
             }
             $r = $this->m->radius[$player->getName()];
             for($x = $centerblock->x - $r / 2; $x <= $centerblock->x + $r / 2; $x++) {
@@ -267,7 +269,7 @@ class PaintTask extends PluginTask {
             case M_BOTH:
             $centerblock = $player->getTargetBlock(20);
             if(!isset($this->m->radius[$player->getName()])) {
-                $this->m->radius->[$player->getName()] = 1;
+                $this->m->radius[$player->getName()] = 1;
             }
             $r = $this->m->radius[$player->getName()];
             for($x = $centerblock->x - $r / 2; $x <= $centerblock->x + $r / 2; $x++) {
@@ -282,7 +284,7 @@ class PaintTask extends PluginTask {
             case M_REPLACE:
             $centerblock = $player->getTargetBlock(20);
             if(!isset($this->m->radius[$player->getName()])) {
-                $this->m->radius->[$player->getName()] = 1;
+                $this->m->radius[$player->getName()] = 1;
             }
             $r = $this->m->radius[$player->getName()];
             for($x = $centerblock->x - $r / 2; $x <= $centerblock->x + $r / 2; $x++) {
