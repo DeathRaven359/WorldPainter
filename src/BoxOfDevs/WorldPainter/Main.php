@@ -27,8 +27,6 @@ use pocketmine\Player;
  
 class Main extends PluginBase{
     
-    
-    
 public function onEnable(){
     $this->mode = [];
     $this->radius = [];
@@ -49,7 +47,7 @@ public function onEnable(){
  
  
  
- public function getBlock(string $cblock) { // Format example: "1:0%90,6:0%10" 
+ public function getBlock(\string $cblock) { // Format example: "1:0%90,6:0%10" 
  
      if(strpos($cblock, ",")) { // If there is a proportion.
          $cblocks = explode(",", $cblock);
@@ -95,7 +93,7 @@ public function onEnable(){
  
  
  
- public function parseBlock(string $cblock) { // Format example: "1:0%90,6:0%10" 
+ public function parseBlock(\string $cblock) { // Format example: "1:0%90,6:0%10" 
  
      if(strpos($cblock, ",")) { // If there is a proportion.
          $cblocks = explode(",", $cblock);
