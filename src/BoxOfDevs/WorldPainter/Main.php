@@ -175,7 +175,7 @@ public function onEnable(){
                  $this->radius[$sender->getName()] = $args[0];
                  $sender->sendMessage(PREFIX . CG . "Your radius has been set to {$args[0]}");
              } else {
-                 $sender->sendMEssage(PRefix . CR . "A radius must be numeric");
+                 $sender->sendMessage(PRefix . CR . "A radius must be numeric");
              }
          } elseif(!$sender instanceof Player) {
              $sender->sendMessage(PREFIX . CR . "You can only use this command in game !");
